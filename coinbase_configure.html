@@ -1,0 +1,22 @@
+<template name="configureLoginServiceDialogForCoinbase">
+  <p>
+    First, you'll need to get a Coinbase Client ID. Follow these steps:
+  </p>
+  <ol>
+    <li>
+      Visit <a href="https://www.coinbase.com/oauth/applications/new" target="blank">https://www.coinbase.com/oauth/applications/new</a>
+    </li>
+    <li>
+      Enter your application name.
+    </li>
+    <li>
+      Set Permitted Redirect URIs to: <span class="url">{{siteUrl}}_oauth/coinbase</span>
+    </li>
+    <li>
+      Click "Advanced Settings" and check the box for "Reuse Existing Tokens"
+    </li>
+    <li>
+      Create the application.
+    </li>
+  </ol>
+</template>
