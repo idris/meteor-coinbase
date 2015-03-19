@@ -1,9 +1,18 @@
-Coinbase = {};
+Coinbase = {
+  _server: 'https://www.coinbase.com',
+  _sandboxServer: 'https://sandbox.coinbase.com',
+  _apiServer: 'https://api.coinbase.com',
+  _sandboxApiServer: 'https://api.sandbox.coinbase.com'
+};
 
 OAuth.registerService('coinbase', 2, null, function(query) {
-  var response = getTokens(query);
+  var config = ServiceConfiguration.configurations.findOne({service: 'coinbase'});
+  if (!config)
+    throw new ServiceConfiguration.ConfigError();
+
+  var response = getTokens(config, query);
   var accessToken = response.accessToken;
-  var identity = getIdentity(accessToken);
+  var identity = getIdentity(config, accessToken);
 
   var serviceData = {
     id: identity.id,
@@ -33,15 +42,13 @@ if (Meteor.release)
 // - accessToken
 // - expiresIn: lifetime of token in seconds
 // - refreshToken, if we got a refresh token from the server
-var getTokens = function (query) {
-  var config = ServiceConfiguration.configurations.findOne({service: 'coinbase'});
-  if (!config)
-    throw new ServiceConfiguration.ConfigError();
+var getTokens = function (config, query) {
+  var server = config.sandbox ? Coinbase._sandboxServer : Coinbase._server;
 
   var response;
   try {
     response = HTTP.post(
-      'https://www.coinbase.com/oauth/token', {
+      server + '/oauth/token', {
         headers: {
           Accept: 'application/json',
           'User-Agent': userAgent
@@ -71,10 +78,12 @@ var getTokens = function (query) {
   }
 };
 
-var getIdentity = function (accessToken) {
+var getIdentity = function (config, accessToken) {
+  var server = config.sandbox ? Coinbase._sandboxApiServer : Coinbase._apiServer;
+
   try {
     return HTTP.get(
-      "https://api.coinbase.com/v1/users/self", {
+      server + '/v1/users/self', {
         headers: {"User-Agent": userAgent},
         params: {access_token: accessToken}
       }).data.user;

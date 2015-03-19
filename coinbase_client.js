@@ -1,4 +1,7 @@
-Coinbase = {};
+Coinbase = {
+  _server: 'https://www.coinbase.com',
+  _sandboxServer: 'https://sandbox.coinbase.com'
+};
 
 // Request Coinbase credentials for the user
 // @param options {optional}
@@ -25,8 +28,10 @@ Coinbase.requestCredential = function (options, credentialRequestCompleteCallbac
 
   var loginStyle = OAuth._loginStyle('coinbase', config, options);
 
+  var server = config.sandbox ? Coinbase._sandboxServer : Coinbase._server;
+
   var loginUrl =
-    'https://coinbase.com/oauth/authorize?response_type=code' +
+    server + '/oauth/authorize?response_type=code' +
     '&client_id=' + config.clientId +
     '&scope=' + flatScope +
     '&redirect_uri=' + OAuth._redirectUri('coinbase', config) +
